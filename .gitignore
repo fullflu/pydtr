@@ -1,0 +1,25 @@
+# cache
+__pycache__
+.mypy_cache
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# egg
+*.egg-info/
+.eggs/
+
+# python
+.python-version
+
+# test
+.coverage
+htmlcov/
+
+# env
+.env
+.envrc
+
+# build
+build/
+dist/
