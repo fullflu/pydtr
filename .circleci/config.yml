@@ -26,10 +26,6 @@ jobs:
             make test
       - codecov/upload:
           file: coverage.xml
-      - run:
-          name: print env
-          command: |
-            . venv/bin/activate
   deploy:
     docker:
       - image: circleci/python:3.6
