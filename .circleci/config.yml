@@ -1,0 +1,86 @@
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
+jobs:
+  build-and-test:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+      - run:
+          name: Setup testing environment
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make dev
+      - save_cache:
+          key: dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+          paths:
+            - "venv"
+      - run:
+          name: Run Tests
+          command: |
+            . venv/bin/activate
+            make test
+      - codecov/upload:
+          file: coverage.xml
+      - run:
+          name: print env
+          command: |
+            . venv/bin/activate
+  deploy:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make dev
+      - save_cache:
+          key: dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+          paths:
+            - "venv"
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py verify
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = fullflu" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: create packages
+          command: |
+            make package
+      - run:
+          name: upload to pypi
+          command: |
+            . venv/bin/activate
+            echo "TODO: pypi upload"
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build-and-test:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
