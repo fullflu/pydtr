@@ -63,7 +63,7 @@ jobs:
           name: upload to pypi
           command: |
             . venv/bin/activate
-            echo "TODO: pypi upload"
+            twine upload dist/*
 workflows:
   version: 2
   workflow:
