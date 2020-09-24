@@ -63,7 +63,7 @@ jobs:
           name: upload to pypi
           command: |
             . venv/bin/activate
-            twine upload dist/*
+            twine upload --repository pypi dist/*
 workflows:
   version: 2
   workflow:
