@@ -58,7 +58,7 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     setup_requires=["pytest-runner"],
-    tests_require=["pytest", "pytest-cov", "coverage"],
+    tests_require=["pytest", "pytest-cov", "coverage", "category_encoders"],
     cmdclass={
         'verify': VerifyVersionCommand,
     }
