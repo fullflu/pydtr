@@ -114,11 +114,11 @@ def test_iqlearn_regwrapper_rule():
     assert len(dtr_model.models[0]) == 2
 
 
-def test_iqlearn_regwrapper_rf():
+def test_iqlearn_rf():
     # setup params
     n = 10
     thres = int(n / 2)
-    # sample rule base models
+    # rf models
     model1 = RandomForestRegressor()
     model2 = RandomForestRegressor()
     # sample dataframe
@@ -143,7 +143,7 @@ def test_iqlearn_regwrapper_rf():
             "outcome": "Y2"
         }
     ]
-    # fit model (dummy)
+    # fit model
     dtr_model = IqLearnReg(
         n_stages=2,
         model_info=model_info
@@ -163,7 +163,7 @@ def test_iqlearn_regwrapper_rf():
     a2 = action_all.query("stage == 1")[["A2", "val"]].reset_index(drop=True)
     assert_frame_equal(action_1, a1)
     assert_frame_equal(action_2, a2)
-    # fit bootstrap model (dummy)
+    # fit bootstrap model
     dtr_model = IqLearnReg(
         n_stages=2,
         model_info=model_info,
@@ -177,7 +177,7 @@ def test_iqlearn_regwrapper_rf_multiple_actions():
     # setup params
     n = 10
     thres = int(n / 2)
-    # sample rule base models
+    # rf models
     model1 = RandomForestRegressor()
     model2 = RandomForestRegressor()
     # sample dataframe
@@ -202,7 +202,7 @@ def test_iqlearn_regwrapper_rf_multiple_actions():
             "outcome": "Y2"
         }
     ]
-    # fit model (dummy)
+    # fit model
     dtr_model = IqLearnReg(
         n_stages=2,
         model_info=model_info
@@ -222,7 +222,7 @@ def test_iqlearn_regwrapper_rf_multiple_actions():
     a2 = action_all.query("stage == 1")[["A1", "A2", "val"]].reset_index(drop=True)
     assert_frame_equal(action_1, a1)
     assert_frame_equal(action_2, a2)
-    # fit bootstrap model (dummy)
+    # fit bootstrap model
     dtr_model = IqLearnReg(
         n_stages=2,
         model_info=model_info,
@@ -236,7 +236,7 @@ def test_iqlearn_regwrapper_rf_ordinalencoder():
     # setup params
     n = 30
     thres = int(n / 2)
-    # sample rule base models
+    # rf models
     model1 = RandomForestRegressor()
     model2 = RandomForestRegressor()
     # sample dataframe
@@ -261,7 +261,7 @@ def test_iqlearn_regwrapper_rf_ordinalencoder():
             "outcome": "Y2"
         }
     ]
-    # fit model (dummy)
+    # fit model
     dtr_model = IqLearnReg(
         n_stages=2,
         model_info=model_info
@@ -281,7 +281,7 @@ def test_iqlearn_regwrapper_rf_ordinalencoder():
     a2 = action_all.query("stage == 1")[["A2", "val"]].reset_index(drop=True)
     assert_frame_equal(action_1, a1)
     assert_frame_equal(action_2, a2)
-    # fit bootstrap model (dummy)
+    # fit bootstrap model
     dtr_model = IqLearnReg(
         n_stages=2,
         model_info=model_info,
