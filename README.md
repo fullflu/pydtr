@@ -15,7 +15,7 @@ Pydtr enables you to implement DTR methods easily by using sklearn-based interfa
 
 |                Method                 |  Single binary treatment   |  Multiple treatments  |    Multinomial treatment   |  Continuous Treatment  |
 | ---- | ---- | ---- | ---- | ---- |
-|  IqLearnReg <br> (with sklearn)      |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark: <br>(with ordinal encoded treatment)  |
+|  IqLearnReg <br> (with sklearn)      |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark: <br>(with pipeline)  |
 |  IqLearnReg <br> (with statsmodels)  |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark:       |
 | GEstimation | WIP | | WIP | WIP |
 
@@ -25,21 +25,37 @@ When a treatment variable is multinomial and you use a sklearn model as a regres
 
 G-estimation, a famous method of DTR, is now unavailable.
 
-## Requirement
+## Requirements
 
-- python (>= 3.6)
-- pip
+- python>=3.6
+- pandas>=1.1.2
+- scikit-learn>=0.23.2
+- numpy>=1.19.2
+- statsmodels>=0.12.0
 
-## Install
+## Installation
 
-`pip install pydtr`
+### From pypi
+
+```
+pip install pydtr
+```
+
+### From source
+
+```
+git clone https://github.com/fullflu/pydtr.git
+cd pydtr
+python setup.py install
+```
 
 ## Usage
 
 ### Iterative Q Learning (IqLearnReg)
 
 You need to import libraries and prepare data.
-```
+
+```python
 # import
 import numpy as np
 import pandas as pd
@@ -59,7 +75,8 @@ df["Y2"] = np.zeros(n)
 ```
 
 You can use sklearn-based models.
-```
+
+```python
 # set model info
 model_info = [
     {
@@ -89,7 +106,8 @@ opt_action_all_stages = dtr_model.predict_all_stages(df)
 ```
 
 You can also use statsmodels-based models.
-```
+
+```python
 # set model info
 model_info = [
     {
@@ -160,4 +178,4 @@ If all checkes have passed in pull-requests, I will merge and release them.
 
 ## References
 
-- Chakraborty, Bibhas. *Statistical methods for dynamic treatment regimes.* Springer, 2013.
+- Chakraborty, B, Moodie, EE. *Statistical Methods for Dynamic Treatment Regimes.* Springer, New York, 2013.
