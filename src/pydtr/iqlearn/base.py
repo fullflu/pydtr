@@ -6,7 +6,6 @@ from abc import ABCMeta, abstractmethod
 import pandas as pd
 import numpy as np
 from sklearn.utils import resample
-from sklearn.utils.estimator_checks import check_estimator
 
 
 class IqLearnBase(object):
@@ -103,10 +102,6 @@ class IqLearnBase(object):
             size_bs = df.shape[0]
         return resample(df, n_samples=size_bs)
 
-    @staticmethod
-    def _check_model_type(model):
-        assert type(model) == str or check_estimator(model)
-
     def fit(self, df: pd.DataFrame):
         """
         Fit dtr models
@@ -136,16 +131,15 @@ class IqLearnBase(object):
         # fit models using bootstrap
         for i in range(self.n_bs):
             df_i = self._sample_bs(df)
-            print("{}th bootstrap".format(i))
             for t in reversed(range(self.n_stages)):
                 # extract feature and outcome
-                X = df[self.model_info[t]["feature"]]
-                y = df[self.model_info[t]["outcome"]]
+                X = df_i[self.model_info[t]["feature"]]
+                y = df_i[self.model_info[t]["outcome"]]
                 if t == self.n_stages - 1:
                     p_outcome = y.values
                 else:
-                    X2 = df[self.model_info[t + 1]["feature"]]
-                    y2 = df[self.model_info[t + 1]["outcome"]]
+                    X2 = df_i[self.model_info[t + 1]["feature"]]
+                    y2 = df_i[self.model_info[t + 1]["outcome"]]
                     p_outcome = self._get_p_outcome(self.model_all[t + 1], X2, y2, t)
                 # fit model of stage t
                 self._fit_model(X, p_outcome, t, i)
@@ -172,9 +166,9 @@ class IqLearnBase(object):
     def get_params(self) -> pd.DataFrame:
         # get estimated parameters
         params = pd.DataFrame()
-        for t, m in enumerate(self.models[:-1]):
+        for t in reversed(range(self.n_stages)):
             if type(self.model_info[t]["model"]) == str:
-                tmp_df = pd.melt(pd.DataFrame([i.params for i in m]))
+                tmp_df = pd.melt(pd.DataFrame([i.params for i in self.models[t]]))
                 tmp_df["stage"] = t
                 params = pd.concat([params, tmp_df])
         return params
