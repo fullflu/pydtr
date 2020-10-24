@@ -226,4 +226,3 @@ def test_iqlearn_sm_get_params():
     a2_unique_shape = params.query("stage == 1 & variable == 'A2'")["value"].unique().shape[0]
     assert l1_unique_shape != 1 or a1_unique_shape != 1 or a2_unique_shape != 1
     assert len(dtr_model.models[0]) == 10
-
