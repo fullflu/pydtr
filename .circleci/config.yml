@@ -5,6 +5,9 @@ jobs:
   build-and-test:
     docker:
       - image: circleci/python:3.6
+        auth:
+          username: fullflu
+          password: $DOCKERHUB_PASSWORD 
     steps:
       - checkout
       - restore_cache:
@@ -29,6 +32,9 @@ jobs:
   deploy:
     docker:
       - image: circleci/python:3.6
+        auth:
+          username: fullflu
+          password: $DOCKERHUB_PASSWORD 
     steps:
       - checkout
       - restore_cache:
@@ -69,10 +75,14 @@ workflows:
   workflow:
     jobs:
       - build-and-test:
+          context: docker-hub-creds
           filters:
             tags:
               only: /.*/
       - deploy:
+          context:
+            - docker-hub-creds
+            - pypi-publish
           requires:
             - build-and-test
           filters:
