@@ -166,6 +166,8 @@ If all checkes have passed in pull-requests, I will merge and release them.
 ├── MANIFEST.IN
 ├── Makefile
 ├── README.md
+├── examples
+│   ├── ...several notebooks...
 ├── setup.cfg
 ├── setup.py
 ├── src
