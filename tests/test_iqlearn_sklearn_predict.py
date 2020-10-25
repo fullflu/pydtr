@@ -1,8 +1,12 @@
 import pandas as pd
 import numpy as np
+import category_encoders as ce
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.ensemble import RandomForestRegressor
 from pandas._testing import assert_frame_equal
+from sklearn.linear_model import Ridge
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 from pydtr.iqlearn.regression import IqLearnReg
 
@@ -173,7 +177,7 @@ def test_iqlearn_rf():
     assert len(dtr_model.models[0]) == 2
 
 
-def test_iqlearn_regwrapper_rf_multiple_actions():
+def test_iqlearn_rf_multiple_actions():
     # setup params
     n = 10
     thres = int(n / 2)
@@ -232,7 +236,7 @@ def test_iqlearn_regwrapper_rf_multiple_actions():
     assert len(dtr_model.models[0]) == 2
 
 
-def test_iqlearn_regwrapper_rf_ordinalencoder():
+def test_iqlearn_rf_ordinalencoder():
     # setup params
     n = 30
     thres = int(n / 2)
@@ -289,3 +293,66 @@ def test_iqlearn_regwrapper_rf_ordinalencoder():
     )
     dtr_model.fit(df)
     assert len(dtr_model.models[0]) == 2
+
+
+def test_iqlearn_pipeline_category_encoder():
+    # setup params
+    n = 30
+    thres = int(n / 2)
+    # statsmodels
+    model1 = Pipeline(
+        [
+            ("ce0", ce.OneHotEncoder(cols=["A1"])),
+            ("scale", StandardScaler()),
+            ("model", Ridge())
+        ]
+    )
+    model2 = Pipeline(
+        [
+            ("ce0", ce.OneHotEncoder(cols=["A1", "A2"])),
+            ("scale", StandardScaler()),
+            ("model", Ridge())
+        ]
+    )
+    # sample dataframe
+    df = pd.DataFrame()
+    df["L1"] = np.arange(n)
+    df["A1"] = ["A", "B", "C"] * int(n / 3)
+    df["A2"] = ["A"] * int(n / 3) + ["C"] * int(n / 3) + ["D"] * int(n / 3)
+    df["Y1"] = np.zeros(n)
+    df["Y2"] = np.zeros(n)
+    # set model info
+    model_info = [
+        {
+            "model": model1,
+            "action_dict": {"A1": ["A", "B", "C"]},
+            "feature": ["L1", "A1"],
+            "outcome": "Y1"
+        },
+        {
+            "model": model2,
+            "action_dict": {"A2": ["A", "C", "D"]},
+            "feature": ["L1", "A1", "Y1", "A2"],
+            "outcome": "Y2"
+        }
+    ]
+    # fit model
+    dtr_model = IqLearnReg(
+        n_stages=2,
+        model_info=model_info
+    )
+    dtr_model.fit(df)
+    # predict optimal atcions
+    action_1 = dtr_model.predict(df, 0)
+    action_2 = dtr_model.predict(df, 1)
+    action_all = dtr_model.predict_all_stages(df)
+    # stage 1 test
+    assert action_1.shape[0] == df.shape[0]
+    # stage 2 test
+    assert action_2.shape[0] == df.shape[0]
+    # all stage test
+    assert action_all.shape[0] == action_1.shape[0] * 2
+    a1 = action_all.query("stage == 0")[["A1", "val"]].reset_index(drop=True)
+    a2 = action_all.query("stage == 1")[["A2", "val"]].reset_index(drop=True)
+    assert_frame_equal(action_1, a1)
+    assert_frame_equal(action_2, a2)

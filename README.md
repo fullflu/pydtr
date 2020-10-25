@@ -13,15 +13,17 @@ A DTR is a paradigm that attempts to select optimal treatments adaptively for in
 
 Pydtr enables you to implement DTR methods easily by using sklearn-based interfaces.
 
-|                Method                 |  Single binary treatment   |  Multiple treatments  |    Multinomial treatment   |  Continuous Treatment  |
-| ---- | ---- | ---- | ---- | ---- |
-|  IqLearnReg <br> (with sklearn)      |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark: <br>(with pipeline)  |
-|  IqLearnReg <br> (with statsmodels)  |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark:       |
-| GEstimation | WIP | | WIP | WIP |
+|                Method                 |  Single binary treatment   |  Multiple treatments  |    Multinomial treatment   |  Continuous treatment  |  Modeling flexibility  |  Interpretability  |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | 
+|  IqLearnReg <br> (with sklearn)      |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark: <br>(with pipeline)  |    |   :white_check_mark: <br>(with arbitrary regression models)  |       |
+|  IqLearnReg <br> (with statsmodels)  |  :white_check_mark:   |   :white_check_mark:  |   :white_check_mark:       |    | limited to OLS   |    :white_check_mark: <br>(with confidence intervals)  |
+| GEstimation | WIP | | WIP | WIP | WIP | WIP |
 
 `IqLearnReg` means a regression method of iterative q-learning.
 
-When a treatment variable is multinomial and you use a sklearn model as a regression function, you need to encode the treatment variable by an ordinal encoding and use a tree-based sklearn model.
+When there are categorical independent variables and you use a sklearn model as a regression function, you need to encode the categorical variables before using the model.
+
+We recommend to encode categorical variables by `category_encoders` and combine the encoders with the sklearn model by `sklearn.pipeline`.
 
 G-estimation, a famous method of DTR, is now unavailable.
 
@@ -136,6 +138,8 @@ opt_action_stage_2 = dtr_model.predict(df, 1)
 opt_action_all_stages = dtr_model.predict_all_stages(df)
 ```
 
+Please see [examples](https://github.com/fullflu/pydtr/blob/master/examples/) to get more information.
+
 ## Authors
 
 - [@fullflu](https://github.com/fullflu) 
@@ -162,6 +166,8 @@ If all checkes have passed in pull-requests, I will merge and release them.
 ├── MANIFEST.IN
 ├── Makefile
 ├── README.md
+├── examples
+│   ├── ...several notebooks...
 ├── setup.cfg
 ├── setup.py
 ├── src

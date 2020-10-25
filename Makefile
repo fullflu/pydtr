@@ -1,6 +1,7 @@
 dev:
 	pip install --upgrade pip
 	pip install -e ./.
+	pip install category_encoders
 	pip install pytest
 	pip install coverage
 	pip install twine
